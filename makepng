@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# LICENSED UNDER GPLv3.0
+# DON'T BLAME ME FOR BREAKING YOUR SYSTEM
+
+which maim &> /dev/null
+if [ $? != 0 ]; then
+    echo "Dependency missing: maim"
+    echo "Available in Community: pacman -S maim"
+    return 1
+fi
+
+which slop &> /dev/null
+if [ $? != 0 ]; then
+    echo "Dependency missing: slop"
+    echo "Available in Community: pacman -S slop"
+    return 1
+fi
+
+TMP_PNG=$(mktemp /tmp/outXXXXXXXXXX.png)
+maim -s -c 1,0,0,0.6 "$TMP_PNG" 
+res=$(curl -F c=@$TMP_PNG https://ptpb.pw | awk -F'url:' '{print $2}') && (printf $res | xclip -sel clip; printf "\a")
+notify-send $res
